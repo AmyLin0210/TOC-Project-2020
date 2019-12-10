@@ -12,7 +12,6 @@ def GetHighwayInfo(highway_id, direction_id):
         'section_average_speed': [ x['section_average_speed'] for x in response if x['directionid'] == direction_id],
         'end_location':          [ x['end_location'] for x in response if x['directionid'] == direction_id],
     }
-    print(highway_info)
     return highway_info
 
 # def GetHighWaySpeed(direction, start_location, end_location, heighway_info):
@@ -27,6 +26,12 @@ class TocMachine(GraphMachine):
         self.highway_id     = -1
         self.direction      = ""
         self.highway_info   = []
+
+    def is_going_to_quit(self, event):
+        text = event.message.text
+        if any(x in text.lower() for x in ['exit', 'quit', '離開']):
+            return True
+        return False
     
     def is_going_to_start_chatting(self, event):
         text = event.message.text
@@ -82,6 +87,12 @@ class TocMachine(GraphMachine):
 
         reply_token = event.reply_token
         send_text_message(reply_token, "輸入任意字開始查詢") 
+
+    def on_enter_quit(self, event):
+        print("I'm entering which_road")
+
+        reply_token = event.reply_token
+        send_text_message(reply_token, "請問你要查詢哪條國道？")
 
     def on_enter_which_road(self, event):
         print("I'm entering which_road")

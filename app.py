@@ -57,6 +57,12 @@ machine = TocMachine(
             "conditions": "is_going_to_get_speed",
         },
         {
+            "trigger": "advance",
+            "source": ["user", "start_chatting","which_road","which_direction", "ask_road_start", "ask_road_end", "get_speed"],
+            "dest": "start_chatting",
+            "conditions": "is_going_to_quit",    
+        },
+        {
             "trigger": "go_back", 
             "source": ["ask_road_start", "ask_road_end", "which_road", "get_speed"], 
             "dest": "start_chatting"
