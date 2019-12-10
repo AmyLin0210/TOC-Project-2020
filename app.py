@@ -12,23 +12,55 @@ from utils import send_text_message
 
 load_dotenv()
 
+high_way = 0
+start = "名間"
+end   = "竹山"
+
 
 machine = TocMachine(
-    states=["user", "state1", "state2"],
+    states=["user", "start_chatting","which_road","which_direction", "ask_road_start", "ask_road_end", "get_speed"],
     transitions=[
         {
             "trigger": "advance",
             "source": "user",
-            "dest": "state1",
-            "conditions": "is_going_to_state1",
+            "dest": "start_chatting",
+            "conditions": "is_going_to_start_chatting",
         },
         {
             "trigger": "advance",
-            "source": "user",
-            "dest": "state2",
-            "conditions": "is_going_to_state2",
+            "source": "start_chatting",
+            "dest": "which_road",
+            "conditions": "is_going_to_which_road",
         },
-        {"trigger": "go_back", "source": ["state1", "state2"], "dest": "user"},
+        {
+            "trigger": "advance",
+            "source": "which_road",
+            "dest": "which_direction",
+            "conditions": "is_going_to_which_direction",
+        },
+        {
+            "trigger": "advance",
+            "source": "which_direction",
+            "dest": "ask_road_start",
+            "conditions": "is_going_to_ask_road_start",
+        },
+        {
+            "trigger": "advance",
+            "source": "ask_road_start",
+            "dest": "ask_road_end",
+            "conditions": "is_going_to_ask_road_end",
+        },
+        {
+            "trigger": "advance",
+            "source": "ask_road_end",
+            "dest": "get_speed",
+            "conditions": "is_going_to_get_speed",
+        },
+        {
+            "trigger": "go_back", 
+            "source": ["ask_road_start", "ask_road_end", "which_road", "get_speed"], 
+            "dest": "start_chatting"
+        },
     ],
     initial="user",
     auto_transitions=False,
@@ -104,7 +136,7 @@ def webhook_handler():
         print(f"REQUEST BODY: \n{body}")
         response = machine.advance(event)
         if response == False:
-            send_text_message(event.reply_token, "Not Entering any State")
+            send_text_message(event.reply_token, "輸入資料格式錯誤，請再輸入一次")
 
     return "OK"
 
